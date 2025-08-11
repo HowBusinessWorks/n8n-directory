@@ -1,0 +1,98 @@
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+// Template type definition matching our database schema
+export interface Template {
+  id: string
+  title: string
+  description: string
+  workflow_json: any
+  node_count: number
+  nodes_used: string[]
+  source: string | null
+  source_url: string | null
+  source_path: string | null
+  categories: string[]
+  use_case: string | null
+  complexity_level: string
+  automation_pattern: string | null
+  has_triggers: boolean
+  has_ai_nodes: boolean
+  workflow_hash: string | null
+  ai_title: string | null
+  ai_description: string | null
+  ai_use_cases: string[]
+  ai_how_works: string[]
+  ai_setup_steps: string[]
+  ai_apps_used: string[]
+  ai_categories: string | null
+  ai_roles: string[]
+  ai_industries: string[]
+  ai_tags: string[]
+  popularity_score: number
+  created_at: string | null
+  updated_at: string | null
+  extracted_at: string | null
+}
+
+// Frontend-friendly template type (simplified for UI)
+export interface TemplateDisplay {
+  id: string
+  title: string
+  description: string
+  nodes: number
+  complexity: 'Beginner' | 'Intermediate' | 'Advanced'
+  industries: string[]
+  integrations: Array<{
+    name: string
+    logo?: string
+    description?: string
+  }>
+  useCases?: string[]
+  howWorks?: string
+  setupSteps?: string[]
+  categories?: string[]
+  roles?: string[]
+  tags?: string[]
+  workflow_json?: any
+  source?: string
+}
+
+// Helper function to transform database template to display format
+export function transformTemplateForDisplay(template: Template): TemplateDisplay {
+  return {
+    id: template.id,
+    title: template.ai_title || template.title,
+    description: template.ai_description || template.description,
+    nodes: template.node_count,
+    complexity: mapComplexityLevel(template.complexity_level),
+    industries: template.ai_industries || [],
+    integrations: template.ai_apps_used.map(app => ({ name: app })),
+    useCases: template.ai_use_cases,
+    howWorks: template.ai_how_works?.join('\n\n') || undefined,
+    setupSteps: template.ai_setup_steps,
+    categories: template.categories,
+    roles: template.ai_roles,
+    tags: template.ai_tags,
+    workflow_json: template.workflow_json,
+    source: template.source || undefined,
+  }
+}
+
+// Map database complexity levels to frontend display
+function mapComplexityLevel(level: string): 'Beginner' | 'Intermediate' | 'Advanced' {
+  switch (level?.toLowerCase()) {
+    case 'simple':
+      return 'Beginner'
+    case 'medium':
+      return 'Intermediate'
+    case 'complex':
+      return 'Advanced'
+    default:
+      return 'Beginner'
+  }
+}
