@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { Search, SlidersHorizontal, ArrowRight, ChevronDown, Heart, LayoutTemplate, Loader2 } from "lucide-react"
+import { Search, SlidersHorizontal, ArrowRight, ChevronDown, Heart, LayoutTemplate, Loader2, ChevronLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
 import { getTemplates, getFilterOptions, TemplateFilters } from "@/lib/templates"
 import { TemplateDisplay } from "@/lib/supabase"
@@ -23,6 +23,10 @@ export default function TemplateDirectory() {
   const [selectedIndustry, setSelectedIndustry] = useState("All")
   const [selectedComplexity, setSelectedComplexity] = useState("All")
   const [sortBy, setSortBy] = useState<"recent" | "popular" | "alphabetical" | "node_count">("recent")
+  
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1)
+  const ITEMS_PER_PAGE = 9
   
   // Filter options
   const [filterOptions, setFilterOptions] = useState({
@@ -57,7 +61,7 @@ export default function TemplateDirectory() {
         industry: selectedIndustry !== "All" ? selectedIndustry : undefined,
         complexity: selectedComplexity !== "All" ? selectedComplexity : undefined,
         sortBy,
-        limit: 50 // Show first 50 templates
+        limit: 1000 // Get more templates for pagination
       }
 
       const { templates: fetchedTemplates, total, error: fetchError } = await getTemplates(filters)
@@ -67,6 +71,7 @@ export default function TemplateDirectory() {
       } else {
         setTemplates(fetchedTemplates)
         setTotalCount(total)
+        setCurrentPage(1) // Reset to first page when filters change
       }
       
       setLoading(false)
@@ -78,6 +83,21 @@ export default function TemplateDirectory() {
   // Handle search with debouncing
   const handleSearch = (value: string) => {
     setSearchTerm(value)
+  }
+
+  // Calculate pagination
+  const totalPages = Math.ceil(templates.length / ITEMS_PER_PAGE)
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+  const endIndex = startIndex + ITEMS_PER_PAGE
+  const currentTemplates = templates.slice(startIndex, endIndex)
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+    // Scroll to top of template section
+    const templateSection = document.querySelector('#template-section')
+    if (templateSection) {
+      templateSection.scrollIntoView({ behavior: 'smooth' })
+    }
   }
 
   return (
@@ -160,7 +180,7 @@ export default function TemplateDirectory() {
       </section>
 
       {/* Template Directory Section */}
-      <section className="px-6 sm:px-12 md:px-20 lg:px-32 xl:px-40 bg-[#0F0B1A] -mt-12 pt-16 pb-16">
+      <section id="template-section" className="px-6 sm:px-12 md:px-20 lg:px-32 xl:px-40 bg-[#0F0B1A] -mt-12 pt-16 pb-16">
         <div className="mx-auto max-w-6xl">
           {/* Header */}
           <div className="mb-8">
@@ -301,7 +321,7 @@ export default function TemplateDirectory() {
           {/* Template Grid */}
           {!loading && !error && (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3" style={{ gridAutoRows: '1fr' }}>
-              {templates.map((template) => (
+              {currentTemplates.map((template) => (
                 <Link key={template.id} href={`/template/${template.id}`} className="block">
                   <Card
                     className="backdrop-blur-sm transition-all duration-300 border hover:border-[#E87C57]/60 hover:shadow-xl hover:shadow-[#E87C57]/20 flex flex-col group cursor-pointer h-full"
@@ -393,6 +413,91 @@ export default function TemplateDirectory() {
                 </Card>
                 </Link>
               ))}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {!loading && !error && templates.length > 0 && totalPages > 1 && (
+            <div className="flex justify-center items-center mt-12 gap-2">
+              {/* Previous Button */}
+              <Button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                variant="outline"
+                size="sm"
+                className="border-[#2D1A3F] bg-transparent text-white hover:bg-[#2D1A3F] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="h-4 w-4 mr-1" />
+                Previous
+              </Button>
+
+              {/* Page Numbers */}
+              <div className="flex gap-1 mx-4">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                  // Show first page, last page, current page, and pages around current page
+                  const showPage = 
+                    page === 1 || 
+                    page === totalPages || 
+                    (page >= currentPage - 1 && page <= currentPage + 1)
+
+                  if (!showPage) {
+                    // Show ellipsis if there's a gap
+                    if (page === 2 && currentPage > 4) {
+                      return (
+                        <span key={page} className="px-2 py-1 text-gray-400">
+                          ...
+                        </span>
+                      )
+                    }
+                    if (page === totalPages - 1 && currentPage < totalPages - 3) {
+                      return (
+                        <span key={page} className="px-2 py-1 text-gray-400">
+                          ...
+                        </span>
+                      )
+                    }
+                    return null
+                  }
+
+                  return (
+                    <Button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      variant={page === currentPage ? "default" : "outline"}
+                      size="sm"
+                      className={
+                        page === currentPage
+                          ? "bg-[#E87C57] hover:bg-[#FF8D66] text-white border-[#E87C57]"
+                          : "border-[#2D1A3F] bg-transparent text-white hover:bg-[#2D1A3F] hover:text-white"
+                      }
+                    >
+                      {page}
+                    </Button>
+                  )
+                })}
+              </div>
+
+              {/* Next Button */}
+              <Button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                variant="outline"
+                size="sm"
+                className="border-[#2D1A3F] bg-transparent text-white hover:bg-[#2D1A3F] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            </div>
+          )}
+
+          {/* Results Info */}
+          {!loading && !error && templates.length > 0 && (
+            <div className="flex justify-center mt-6">
+              <p className="text-gray-400 text-sm">
+                Showing {startIndex + 1}-{Math.min(endIndex, templates.length)} of {templates.length} templates
+                {totalCount > templates.length && ` (${totalCount.toLocaleString()} total available)`}
+              </p>
             </div>
           )}
 

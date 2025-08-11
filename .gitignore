@@ -32,3 +32,8 @@ RAW_TEMPLATES.json
 
 #mcp
 .mscp.json
+
+PROJECT_DOCUMENTATION.md
+/.claude
+
+.env.local
