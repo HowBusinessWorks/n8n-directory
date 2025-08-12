@@ -19,7 +19,7 @@ export default function PrivacyPage() {
               <div className="bg-[#E87C57] p-1.5 rounded-md">
                 <LayoutTemplate className="h-4 w-4 text-white" />
               </div>
-              <h3 className="text-lg font-bold text-white">n8n vault</h3>
+              <h3 className="text-lg font-bold text-white">n8n json</h3>
             </Link>
             
             {/* Right Side - Templates Link + Contribution Button */}
@@ -107,7 +107,7 @@ export default function PrivacyPage() {
               <div className="bg-[#E87C57] p-2 rounded-lg">
                 <LayoutTemplate className="h-6 w-6 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-white">n8n vault</h3>
+              <h3 className="text-2xl font-bold text-white">n8n json</h3>
             </div>
             
             {/* Center Section - Contribution Button + Copyright */}
@@ -120,7 +120,7 @@ export default function PrivacyPage() {
                 Contribute Template
               </Button>
               <div className="text-gray-500 text-xs">
-                © 2025 n8n vault
+                © 2025 n8n json
               </div>
             </div>
             
@@ -148,7 +148,7 @@ export default function PrivacyPage() {
                 </div>
               </div>
               
-              <h3 className="text-2xl font-bold text-white">Contribute to n8n vault</h3>
+              <h3 className="text-2xl font-bold text-white">Contribute to n8n json</h3>
               
               <p className="text-gray-300 leading-relaxed">
                 Help the community by sharing your amazing n8n workflows! Your templates can help thousands of users automate their processes.

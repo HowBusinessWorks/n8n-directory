@@ -42,7 +42,7 @@ export async function POST(request: Request) {
         email: email,
         reactivate_existing: false,
         send_welcome_email: true,
-        utm_source: 'n8n-vault',
+        utm_source: 'n8n-json',
         utm_medium: 'website',
         utm_campaign: 'newsletter-signup'
       }),

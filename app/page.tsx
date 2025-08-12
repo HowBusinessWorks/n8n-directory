@@ -159,7 +159,7 @@ export default function TemplateDirectory() {
               <div className="bg-[#E87C57] p-1.5 rounded-md">
                 <LayoutTemplate className="h-4 w-4 text-white" />
               </div>
-              <h3 className="text-lg font-bold text-white">n8n vault</h3>
+              <h3 className="text-lg font-bold text-white">n8n json</h3>
             </Link>
             
             {/* Right Side - Templates Link + Contribution Button */}
@@ -194,9 +194,9 @@ export default function TemplateDirectory() {
               #1 FREE n8n Template Directory
             </h1>
 
-            {/* Subheading with dynamic count */}
+            {/* Subheading */}
             <p className="text-xl md:text-2xl mb-10 text-gray-300">
-              {totalCount > 0 ? `${totalCount.toLocaleString()} templates and counting` : "If you don't find it here, you won't find it anywhere else"}
+              If you don't find it here, you won't find it anywhere else
             </p>
 
             {/* Email Form */}
@@ -212,7 +212,7 @@ export default function TemplateDirectory() {
                 />
                 <button
                   type="submit"
-                  disabled={newsletterLoading || !email.trim()}
+                  disabled={newsletterLoading}
                   className="bg-[#E87C57] text-white hover:bg-[#FF8D66] transition-colors py-3 px-8 rounded-lg font-medium text-lg shadow-md whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[200px]"
                 >
                   {newsletterLoading ? (
@@ -600,7 +600,7 @@ export default function TemplateDirectory() {
               <div className="bg-[#E87C57] p-1.5 rounded-md">
                 <LayoutTemplate className="h-4 w-4 text-white" />
               </div>
-              <h3 className="text-lg font-bold text-white">n8n vault</h3>
+              <h3 className="text-lg font-bold text-white">n8n json</h3>
             </div>
             
             {/* Center Section - Contribution Button + Copyright */}
@@ -613,7 +613,7 @@ export default function TemplateDirectory() {
                 Contribute Template
               </Button>
               <div className="text-gray-500 text-xs">
-                © 2025 n8n vault
+                © 2025 n8n json
               </div>
             </div>
             
@@ -641,7 +641,7 @@ export default function TemplateDirectory() {
                 </div>
               </div>
               
-              <h3 className="text-2xl font-bold text-white">Contribute to n8n vault</h3>
+              <h3 className="text-2xl font-bold text-white">Contribute to n8n json</h3>
               
               <p className="text-gray-300 leading-relaxed">
                 Help the community by sharing your amazing n8n workflows! Your templates can help thousands of users automate their processes.
