@@ -15,6 +15,11 @@ export default function TemplateDirectory() {
   const [error, setError] = useState<string | null>(null)
   const [totalCount, setTotalCount] = useState(0)
   
+  // Newsletter states
+  const [email, setEmail] = useState("")
+  const [newsletterLoading, setNewsletterLoading] = useState(false)
+  const [newsletterMessage, setNewsletterMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
+  
   // Filter states
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
@@ -100,6 +105,48 @@ export default function TemplateDirectory() {
     }
   }
 
+  // Newsletter subscription handler
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!email.trim()) {
+      setNewsletterMessage({ type: 'error', text: 'Please enter your email address' })
+      return
+    }
+
+    setNewsletterLoading(true)
+    setNewsletterMessage(null)
+
+    try {
+      const response = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: email.trim() }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setNewsletterMessage({ type: 'success', text: data.message })
+        setEmail('') // Clear the email input
+      } else {
+        setNewsletterMessage({ type: 'error', text: data.error || 'Failed to subscribe' })
+      }
+    } catch (error) {
+      console.error('Newsletter subscription error:', error)
+      setNewsletterMessage({ type: 'error', text: 'An error occurred. Please try again later.' })
+    } finally {
+      setNewsletterLoading(false)
+    }
+
+    // Clear message after 5 seconds
+    setTimeout(() => {
+      setNewsletterMessage(null)
+    }, 5000)
+  }
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#0F0B1A" }}>
       {/* Hero Section */}
@@ -153,21 +200,42 @@ export default function TemplateDirectory() {
             </p>
 
             {/* Email Form */}
-            <form className="max-w-md mx-auto mb-16">
+            <form onSubmit={handleNewsletterSubmit} className="max-w-md mx-auto mb-16">
               <div className="flex flex-col sm:flex-row gap-3">
                 <input
                   type="email"
                   placeholder="Enter your email address"
-                  className="flex-1 px-4 py-3 rounded-lg bg-[#2D1A3F] border border-[#4D3A5F] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#E87C57] focus:border-[#E87C57] transition-colors"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={newsletterLoading}
+                  className="flex-1 px-4 py-3 rounded-lg bg-[#2D1A3F] border border-[#4D3A5F] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#E87C57] focus:border-[#E87C57] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 />
                 <button
                   type="submit"
-                  className="bg-[#E87C57] text-white hover:bg-[#FF8D66] transition-colors py-3 px-6 rounded-lg font-medium text-lg shadow-md whitespace-nowrap"
+                  disabled={newsletterLoading || !email.trim()}
+                  className="bg-[#E87C57] text-white hover:bg-[#FF8D66] transition-colors py-3 px-8 rounded-lg font-medium text-lg shadow-md whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[200px]"
                 >
-                  Get Weekly Templates
+                  {newsletterLoading ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                      Subscribing...
+                    </>
+                  ) : (
+                    'Get Weekly Templates'
+                  )}
                 </button>
               </div>
-              <p className="text-sm text-gray-400 mt-3">
+              
+              {/* Success/Error Message */}
+              {newsletterMessage && (
+                <div className={`mt-3 text-sm text-center transition-all duration-300 ${
+                  newsletterMessage.type === 'success' ? 'text-green-400' : 'text-red-400'
+                }`}>
+                  {newsletterMessage.text}
+                </div>
+              )}
+              
+              <p className="text-sm text-gray-400 mt-3 text-center">
                 Get the best n8n templates delivered to your inbox every week
               </p>
             </form>
