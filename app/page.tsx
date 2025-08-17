@@ -41,8 +41,7 @@ export default function TemplateDirectory() {
     complexityLevels: [] as string[]
   })
   
-  // Other states
-  const [isContributionOpen, setIsContributionOpen] = useState(false)
+  // Other states (removed contribution modal)
 
   // Load filter options on component mount
   useEffect(() => {
@@ -169,11 +168,13 @@ export default function TemplateDirectory() {
               </Link>
               <Button 
                 variant="ghost"
-                onClick={() => setIsContributionOpen(true)}
+                asChild
                 className="text-white hover:text-[#E87C57] hover:bg-transparent font-medium px-4 py-1.5 transition-colors text-sm border border-transparent hover:border-[#E87C57]"
               >
-                <Heart className="h-3 w-3 mr-1.5" />
-                Contribute Template
+                <a href="https://tally.so/r/3qlBlY" target="_blank" rel="noopener noreferrer">
+                  <Heart className="h-3 w-3 mr-1.5" />
+                  Contribute Template
+                </a>
               </Button>
             </div>
           </div>
@@ -606,11 +607,13 @@ export default function TemplateDirectory() {
             {/* Center Section - Contribution Button + Copyright */}
             <div className="flex flex-col items-center gap-3">
               <Button 
-                onClick={() => setIsContributionOpen(true)}
+                asChild
                 className="bg-[#E87C57] hover:bg-[#FF8D66] text-white font-medium px-6 py-3 rounded-lg transition-colors"
               >
-                <Heart className="h-4 w-4 mr-2" />
-                Contribute Template
+                <a href="https://tally.so/r/3qlBlY" target="_blank" rel="noopener noreferrer">
+                  <Heart className="h-4 w-4 mr-2" />
+                  Contribute Template
+                </a>
               </Button>
               <div className="text-gray-500 text-xs">
                 © 2025 n8n json
@@ -630,43 +633,6 @@ export default function TemplateDirectory() {
         </div>
       </footer>
 
-      {/* Contribution Modal */}
-      {isContributionOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#1A1225] border border-[#2D1A3F] rounded-2xl p-8 max-w-md w-full">
-            <div className="text-center space-y-6">
-              <div className="flex justify-center">
-                <div className="bg-[#E87C57] p-3 rounded-full">
-                  <Heart className="h-8 w-8 text-white" />
-                </div>
-              </div>
-              
-              <h3 className="text-2xl font-bold text-white">Contribute to n8n json</h3>
-              
-              <p className="text-gray-300 leading-relaxed">
-                Help the community by sharing your amazing n8n workflows! Your templates can help thousands of users automate their processes.
-              </p>
-              
-              <div className="space-y-3">
-                <Button className="w-full bg-[#E87C57] hover:bg-[#FF8D66] text-white font-medium py-3">
-                  Submit Template
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="w-full border-[#2D1A3F] text-gray-300 hover:bg-[#2D1A3F]"
-                  onClick={() => setIsContributionOpen(false)}
-                >
-                  Close
-                </Button>
-              </div>
-              
-              <p className="text-xs text-gray-500">
-                By contributing, you agree to our community guidelines and terms of service.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
