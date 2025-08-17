@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { ArrowLeft, Eye, Users, Building, Tag, CheckCircle, Layers, FolderOpen, Copy, Check, LayoutTemplate, Heart, Loader2 } from "lucide-react"
+import { ArrowLeft, Eye, Users, Building, Tag, CheckCircle, Layers, FolderOpen, Copy, Check, Braces, Heart, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { getTemplateById } from "@/lib/templates"
@@ -128,7 +128,7 @@ export default function TemplatePage() {
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
               <div className="bg-[#E87C57] p-1.5 rounded-md">
-                <LayoutTemplate className="h-4 w-4 text-white" />
+                <Braces className="h-4 w-4 text-white" />
               </div>
               <h3 className="text-lg font-bold text-white">n8n json</h3>
             </Link>
@@ -413,7 +413,7 @@ export default function TemplatePage() {
             {/* Logo */}
             <div className="flex items-center gap-3">
               <div className="bg-[#E87C57] p-2 rounded-lg">
-                <LayoutTemplate className="h-6 w-6 text-white" />
+                <Braces className="h-6 w-6 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-white">n8n json</h3>
             </div>

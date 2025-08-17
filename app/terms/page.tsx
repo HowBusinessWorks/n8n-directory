@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, LayoutTemplate, Heart } from "lucide-react"
+import { ArrowLeft, Braces, Heart } from "lucide-react"
 
 export default function TermsPage() {
   const [isContributionOpen, setIsContributionOpen] = useState(false)
@@ -17,7 +17,7 @@ export default function TermsPage() {
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
               <div className="bg-[#E87C57] p-1.5 rounded-md">
-                <LayoutTemplate className="h-4 w-4 text-white" />
+                <Braces className="h-4 w-4 text-white" />
               </div>
               <h3 className="text-lg font-bold text-white">n8n json</h3>
             </Link>
@@ -102,7 +102,7 @@ export default function TermsPage() {
             {/* Logo */}
             <div className="flex items-center gap-3">
               <div className="bg-[#E87C57] p-2 rounded-lg">
-                <LayoutTemplate className="h-6 w-6 text-white" />
+                <Braces className="h-6 w-6 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-white">n8n json</h3>
             </div>

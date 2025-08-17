@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { Search, SlidersHorizontal, ArrowRight, ChevronDown, Heart, LayoutTemplate, Loader2, ChevronLeft, ChevronRight } from "lucide-react"
+import { Search, SlidersHorizontal, ArrowRight, ChevronDown, Heart, Braces, Loader2, ChevronLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
 import { getTemplates, getFilterOptions, TemplateFilters } from "@/lib/templates"
 import { TemplateDisplay } from "@/lib/supabase"
@@ -156,7 +156,7 @@ export default function TemplateDirectory() {
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
               <div className="bg-[#E87C57] p-1.5 rounded-md">
-                <LayoutTemplate className="h-4 w-4 text-white" />
+                <Braces className="h-4 w-4 text-white" />
               </div>
               <h3 className="text-lg font-bold text-white">n8n json</h3>
             </Link>
@@ -599,7 +599,7 @@ export default function TemplateDirectory() {
             {/* Logo */}
             <div className="flex items-center gap-2">
               <div className="bg-[#E87C57] p-1.5 rounded-md">
-                <LayoutTemplate className="h-4 w-4 text-white" />
+                <Braces className="h-4 w-4 text-white" />
               </div>
               <h3 className="text-lg font-bold text-white">n8n json</h3>
             </div>
