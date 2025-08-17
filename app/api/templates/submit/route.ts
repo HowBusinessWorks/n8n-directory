@@ -91,7 +91,7 @@ export async function POST(request: Request) {
     })
     
     // Return success response (no email notifications)
-    const response = {
+    const response: any = {
       success: true,
       message: 'Template submitted successfully! It will be reviewed and published if approved.',
       templateId: result.templateId,
@@ -144,7 +144,7 @@ export async function POST(request: Request) {
 }
 
 // Handle preflight requests for CORS (if needed for Tally webhook)
-export async function OPTIONS(request: Request) {
+export async function OPTIONS() {
   return new NextResponse(null, {
     status: 200,
     headers: {

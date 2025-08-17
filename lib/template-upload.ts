@@ -157,6 +157,7 @@ export async function uploadTemplateDeveloper(templateData: TemplateUploadData) 
   
   // Prepare template object
   const template = {
+    id: crypto.randomUUID(),
     title,
     description,
     workflow_json,
@@ -183,6 +184,7 @@ export async function uploadTemplateDeveloper(templateData: TemplateUploadData) 
     ai_industries: [],
     ai_tags: [],
     popularity_score: 0,
+    status: 'published', // Developer uploads go live immediately
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     extracted_at: new Date().toISOString()
@@ -233,6 +235,7 @@ export async function submitTemplateForReview(templateData: TemplateUploadData) 
   
   // Prepare template object for review
   const template = {
+    id: crypto.randomUUID(),
     title,
     description,
     workflow_json,
@@ -259,6 +262,7 @@ export async function submitTemplateForReview(templateData: TemplateUploadData) 
     ai_industries: [],
     ai_tags: [],
     popularity_score: 0,
+    status: 'pending_review', // Community submissions need admin approval
     contributor_email,
     contributor_name,
     contributor_contact,
@@ -311,6 +315,7 @@ export async function approveTemplate(templateId: string) {
   const { data, error } = await supabase
     .from('templates')
     .update({ 
+      status: 'published',
       updated_at: new Date().toISOString()
     })
     .eq('id', templateId)

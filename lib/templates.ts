@@ -23,6 +23,7 @@ export async function getTemplates(filters: TemplateFilters = {}): Promise<{
     let query = supabase
       .from('templates')
       .select('*', { count: 'exact' })
+      .or('status.eq.published,status.is.null') // Only show published templates (null for legacy data)
 
     // Apply search filter
     if (filters.search) {
@@ -120,6 +121,7 @@ export async function getTemplateById(id: string): Promise<{
       .from('templates')
       .select('*')
       .eq('id', id)
+      .or('status.eq.published,status.is.null') // Only allow viewing published templates
       .single()
 
     if (error) {
