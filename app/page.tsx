@@ -191,9 +191,11 @@ export default function TemplateDirectory() {
             </div>
 
             {/* Heading */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 whitespace-nowrap">
-              #1 FREE n8n Template Directory
-            </h1>
+            <div className="mb-6">
+              <h1 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight mx-auto max-w-full sm:whitespace-nowrap">
+                #1 FREE n8n Template Directory
+              </h1>
+            </div>
 
             {/* Subheading */}
             <p className="text-xl md:text-2xl mb-10 text-gray-300">
@@ -389,7 +391,7 @@ export default function TemplateDirectory() {
 
           {/* Template Grid */}
           {!loading && !error && (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3" style={{ gridAutoRows: '1fr' }}>
+            <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3" style={{ gridAutoRows: '1fr' }}>
               {currentTemplates.map((template) => (
                 <Link key={template.id} href={`/template/${template.id}`} className="block">
                   <Card
