@@ -75,7 +75,7 @@ export function transformTemplateForDisplay(template: Template): TemplateDisplay
     useCases: template.ai_use_cases,
     howWorks: template.ai_how_works?.join('\n\n') || undefined,
     setupSteps: template.ai_setup_steps,
-    categories: template.categories,
+    categories: template.ai_categories ? [template.ai_categories] : [],
     roles: template.ai_roles,
     tags: template.ai_tags,
     workflow_json: template.workflow_json,

@@ -32,7 +32,7 @@ export async function getTemplates(filters: TemplateFilters = {}): Promise<{
 
     // Apply category filter
     if (filters.category && filters.category !== 'All') {
-      query = query.contains('categories', [filters.category])
+      query = query.eq('ai_categories', filters.category)
     }
 
     // Apply industry filter
@@ -162,7 +162,8 @@ export async function getFilterOptions(): Promise<{
     // Get all templates to extract unique filter values
     const { data, error } = await supabase
       .from('templates')
-      .select('categories, ai_industries, ai_roles, use_case, complexity_level')
+      .select('ai_categories, ai_industries, ai_roles, use_case, complexity_level')
+      .or('status.eq.published,status.is.null') // Only published templates
 
     if (error) {
       console.error('Error fetching filter options:', error)
@@ -184,8 +185,8 @@ export async function getFilterOptions(): Promise<{
     const complexityLevels = new Set<string>()
 
     data?.forEach(template => {
-      // Categories
-      template.categories?.forEach((cat: string) => categories.add(cat))
+      // Categories (ai_categories is a single string, not an array)
+      if (template.ai_categories) categories.add(template.ai_categories)
       
       // Industries
       template.ai_industries?.forEach((ind: string) => industries.add(ind))
