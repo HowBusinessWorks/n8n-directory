@@ -23,6 +23,7 @@ export default function TemplateDirectory() {
   // Filter states
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [selectedRole, setSelectedRole] = useState("All")
   const [selectedIndustry, setSelectedIndustry] = useState("All")
@@ -59,7 +60,7 @@ export default function TemplateDirectory() {
       setError(null)
       
       const filters: TemplateFilters = {
-        search: searchTerm || undefined,
+        search: debouncedSearchTerm || undefined,
         category: selectedCategory !== "All" ? selectedCategory : undefined,
         role: selectedRole !== "All" ? selectedRole : undefined,
         industry: selectedIndustry !== "All" ? selectedIndustry : undefined,
@@ -82,12 +83,21 @@ export default function TemplateDirectory() {
     }
 
     loadTemplates()
-  }, [searchTerm, selectedCategory, selectedRole, selectedIndustry, selectedComplexity, sortBy])
+  }, [debouncedSearchTerm, selectedCategory, selectedRole, selectedIndustry, selectedComplexity, sortBy])
 
   // Handle search with debouncing
   const handleSearch = (value: string) => {
     setSearchTerm(value)
   }
+  
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm)
+    }, 300) // 300ms delay
+
+    return () => clearTimeout(timer)
+  }, [searchTerm])
 
   // Calculate pagination
   const totalPages = Math.ceil(templates.length / ITEMS_PER_PAGE)

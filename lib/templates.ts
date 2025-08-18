@@ -27,7 +27,8 @@ export async function getTemplates(filters: TemplateFilters = {}): Promise<{
 
     // Apply search filter
     if (filters.search) {
-      query = query.or(`title.ilike.%${filters.search}%,ai_title.ilike.%${filters.search}%,description.ilike.%${filters.search}%,ai_description.ilike.%${filters.search}%`)
+      const searchTerm = filters.search.toLowerCase().trim()
+      query = query.or(`title.ilike.%${searchTerm}%,ai_title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,ai_description.ilike.%${searchTerm}%,ai_apps_used.cs.{${searchTerm}},ai_use_cases.cs.{${searchTerm}},ai_tags.cs.{${searchTerm}}`)
     }
 
     // Apply category filter
