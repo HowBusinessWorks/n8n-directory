@@ -209,7 +209,7 @@ export default function TemplateDirectory() {
 
             {/* Subheading */}
             <p className="text-xl md:text-2xl mb-10 text-gray-300">
-              If you don't find it here, you won't find it anywhere else
+            We curate the best n8n templates and send them to you weekly for free
             </p>
 
             {/* Email Form */}
