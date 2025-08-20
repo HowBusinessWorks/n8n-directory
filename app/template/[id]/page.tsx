@@ -164,8 +164,8 @@ export default function TemplatePage() {
             <div className="flex items-start justify-between gap-6 mb-4">
               <h1 className="text-3xl md:text-4xl font-bold text-[#E87C57]">{template.title}</h1>
               <div className="flex items-center gap-3">
-                <Badge className="text-white font-medium" style={{ backgroundColor: "#2D1A3F" }}>
-                  {template.nodes} nodes
+                <Badge className="text-white font-medium text-center px-3" style={{ backgroundColor: "#2D1A3F" }}>
+                  <span className="whitespace-nowrap">{template.nodes} nodes</span>
                 </Badge>
                 <Badge
                   className="text-white font-medium"
