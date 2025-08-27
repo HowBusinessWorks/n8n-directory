@@ -18,6 +18,7 @@ yarn-error.log*
 
 # env files
 .env*
+.env.local
 
 # vercel
 .vercel
@@ -34,5 +35,7 @@ RAW_TEMPLATES.json
 .mcp.json
 
 /.claude
+.DS_Store
 
-.env.local
+# Claude Code files
+CLAUDE.md
