@@ -31,9 +31,8 @@ templates.csv
 RAW_TEMPLATES.json
 
 #mcp
-.mscp.json
+.mcp.json
 
-PROJECT_DOCUMENTATION.md
 /.claude
 
 .env.local
