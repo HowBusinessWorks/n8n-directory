@@ -193,10 +193,10 @@ export default function TemplateDirectory() {
         {/* Hero Content */}
         <div className="container mx-auto px-4 pt-12 pb-24">
           <div className="max-w-4xl mx-auto text-center">
-            {/* Icon Section - Hidden but maintaining spacing */}
-            <div className="flex justify-center mb-4">
-              <div className="bg-transparent p-3 rounded-full">
-                <div className="h-8 w-8"></div>
+            {/* Template Count Badge */}
+            <div className="flex justify-center mb-8">
+              <div className="bg-[#E87C57] transition-colors py-4 px-8 rounded-full font-semibold text-3xl text-white shadow-xl">
+                {totalCount > 0 ? `${totalCount.toLocaleString()} Templates` : 'Loading Templates...'}
               </div>
             </div>
 
@@ -209,7 +209,7 @@ export default function TemplateDirectory() {
 
             {/* Subheading */}
             <p className="text-xl md:text-2xl mb-10 text-gray-300">
-            We curate the best n8n templates and send them to you weekly for free
+            If you dont find it here, you wont find it angwhere else
             </p>
 
             {/* Email Form */}
