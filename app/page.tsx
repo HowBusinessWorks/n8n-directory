@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Search, SlidersHorizontal, ArrowRight, ChevronDown, Heart, Braces, Loader2, ChevronLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
-import { getTemplates, getFilterOptions, TemplateFilters } from "@/lib/templates"
+import { getTemplates, getFilterOptions, getTemplateStats, TemplateFilters } from "@/lib/templates"
 import { TemplateDisplay } from "@/lib/supabase"
 
 export default function TemplateDirectory() {
@@ -14,6 +14,7 @@ export default function TemplateDirectory() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [totalCount, setTotalCount] = useState(0)
+  const [totalTemplatesCount, setTotalTemplatesCount] = useState(0)
   
   // Newsletter states
   const [email, setEmail] = useState("")
@@ -44,13 +45,24 @@ export default function TemplateDirectory() {
   
   // Other states (removed contribution modal)
 
-  // Load filter options on component mount
+  // Load filter options and total template count on component mount
   useEffect(() => {
-    const loadFilterOptions = async () => {
-      const { categories, industries, roles, complexityLevels } = await getFilterOptions()
-      setFilterOptions({ categories, industries, roles, complexityLevels })
+    const loadInitialData = async () => {
+      const [filterOptions, templateStats] = await Promise.all([
+        getFilterOptions(),
+        getTemplateStats()
+      ])
+      
+      setFilterOptions({ 
+        categories: filterOptions.categories, 
+        industries: filterOptions.industries, 
+        roles: filterOptions.roles, 
+        complexityLevels: filterOptions.complexityLevels 
+      })
+      
+      setTotalTemplatesCount(templateStats.total)
     }
-    loadFilterOptions()
+    loadInitialData()
   }, [])
 
   // Load templates based on current filters
@@ -196,7 +208,7 @@ export default function TemplateDirectory() {
             {/* Template Count Badge */}
             <div className="flex justify-center mb-8">
               <div className="bg-[#E87C57] transition-colors py-4 px-8 rounded-full font-semibold text-3xl text-white shadow-xl">
-                {totalCount > 0 ? `${totalCount.toLocaleString()} Templates` : 'Loading Templates...'}
+                {totalTemplatesCount > 0 ? `${totalTemplatesCount.toLocaleString()} Templates` : 'Loading...'}
               </div>
             </div>
 
