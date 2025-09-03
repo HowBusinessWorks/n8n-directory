@@ -392,9 +392,11 @@ export default function TemplateDirectory() {
 
           {/* Loading State */}
           {loading && (
-            <div className="flex items-center justify-center py-16">
-              <Loader2 className="h-8 w-8 animate-spin text-[#E87C57]" />
-              <span className="ml-2 text-white">Loading templates...</span>
+            <div className="min-h-[600px] flex items-center justify-center">
+              <div className="flex flex-col items-center">
+                <Loader2 className="h-8 w-8 animate-spin text-[#E87C57]" />
+                <span className="ml-2 text-white mt-4">Loading templates...</span>
+              </div>
             </div>
           )}
 
