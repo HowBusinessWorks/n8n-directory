@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
@@ -111,11 +111,15 @@ export default function TemplateDirectory() {
     return () => clearTimeout(timer)
   }, [searchTerm])
 
-  // Calculate pagination
-  const totalPages = Math.ceil(templates.length / ITEMS_PER_PAGE)
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
-  const endIndex = startIndex + ITEMS_PER_PAGE
-  const currentTemplates = templates.slice(startIndex, endIndex)
+  // Calculate pagination with memoization
+  const { totalPages, currentTemplates, startIndex, endIndex } = useMemo(() => {
+    const totalPages = Math.ceil(templates.length / ITEMS_PER_PAGE)
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+    const endIndex = startIndex + ITEMS_PER_PAGE
+    const currentTemplates = templates.slice(startIndex, endIndex)
+    
+    return { totalPages, currentTemplates, startIndex, endIndex }
+  }, [templates, currentPage, ITEMS_PER_PAGE])
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
@@ -415,7 +419,9 @@ export default function TemplateDirectory() {
 
           {/* Template Grid */}
           {!loading && !error && (
-            <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3" style={{ gridAutoRows: '1fr' }}>
+            <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+              style={{ contain: 'layout style paint' }}
+            >
               {currentTemplates.map((template) => (
                 <Link key={template.id} href={`/template/${template.id}`} className="block">
                   <Card
