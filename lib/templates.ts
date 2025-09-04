@@ -1,4 +1,5 @@
 import { supabase, Template, TemplateDisplay, transformTemplateForDisplay } from './supabase'
+import { createSlug } from './utils'
 
 // Filter and search options
 export interface TemplateFilters {
@@ -179,6 +180,86 @@ export async function getTemplateById(id: string): Promise<{
       template: null,
       error: 'An unexpected error occurred'
     }
+  }
+}
+
+// Generate SEO-friendly slug from template title
+export function generateTemplateSlug(template: TemplateDisplay): string {
+  if (!template || !template.title) {
+    console.warn('generateTemplateSlug received template with no title:', template)
+    return 'untitled'
+  }
+  return createSlug(template.title)
+}
+
+// Get template by SEO-friendly slug
+export async function getTemplateBySlug(slug: string): Promise<{
+  template: TemplateDisplay | null
+  error: string | null
+}> {
+  try {
+    console.log('Looking for template with slug:', slug)
+    
+    // Get all published templates and find by exact slug match
+    // This is more reliable than trying to reverse-engineer titles from slugs
+    const { data, error } = await supabase
+      .from('templates')
+      .select('*')
+      .or('status.eq.published,status.is.null')
+
+    if (error) {
+      console.error('Error fetching templates for slug lookup:', error)
+      return { template: null, error: error.message }
+    }
+
+    if (!data || data.length === 0) {
+      console.log('No templates found')
+      return { template: null, error: 'No templates found' }
+    }
+
+    console.log(`Checking ${data.length} templates for slug match...`)
+
+    // Check each template for exact slug match
+    for (const templateData of data) {
+      const template = transformTemplateForDisplay(templateData)
+      const templateSlug = generateTemplateSlug(template)
+      
+      if (templateSlug === slug) {
+        console.log(`Found matching template: "${template.title}" -> slug: "${templateSlug}"`)
+        return {
+          template,
+          error: null
+        }
+      }
+    }
+
+    console.log('No exact slug match found for:', slug)
+    return { template: null, error: 'Template not found' }
+
+  } catch (err) {
+    console.error('Unexpected error fetching template by slug:', err)
+    return {
+      template: null,
+      error: 'An unexpected error occurred'
+    }
+  }
+}
+
+
+// Get template by ID or slug (handles both UUID and slug formats)
+export async function getTemplate(idOrSlug: string): Promise<{
+  template: TemplateDisplay | null
+  error: string | null
+}> {
+  // Check if it's a UUID format (contains hyphens and is 36 characters)
+  const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug)
+  
+  if (isUUID) {
+    // Handle as UUID
+    return getTemplateById(idOrSlug)
+  } else {
+    // Handle as slug
+    return getTemplateBySlug(idOrSlug)
   }
 }
 
