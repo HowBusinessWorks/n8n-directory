@@ -25,10 +25,22 @@ export async function getTemplates(filters: TemplateFilters = {}): Promise<{
       .select('*', { count: 'exact' })
       .or('status.eq.published,status.is.null') // Only show published templates (null for legacy data)
 
-    // Apply search filter
+    // Apply search filter with multi-keyword support and prioritization
+    let searchKeywords: string[] = []
     if (filters.search) {
-      const searchTerm = filters.search.toLowerCase().trim()
-      query = query.or(`title.ilike.%${searchTerm}%,ai_title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,ai_description.ilike.%${searchTerm}%,ai_apps_used.cs.{${searchTerm}},ai_use_cases.cs.{${searchTerm}},ai_tags.cs.{${searchTerm}}`)
+      const searchInput = filters.search.toLowerCase().trim()
+      searchKeywords = searchInput.split(/\s+/).filter(keyword => keyword.length > 0)
+      
+      if (searchKeywords.length === 1) {
+        // Single keyword - use original logic
+        const searchTerm = searchKeywords[0]
+        query = query.or(`title.ilike.%${searchTerm}%,ai_title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,ai_description.ilike.%${searchTerm}%,ai_apps_used.cs.{${searchTerm}},ai_use_cases.cs.{${searchTerm}},ai_tags.cs.{${searchTerm}}`)
+      } else {
+        // Multiple keywords - each keyword must be found somewhere (AND logic)
+        searchKeywords.forEach(keyword => {
+          query = query.or(`title.ilike.%${keyword}%,ai_title.ilike.%${keyword}%,description.ilike.%${keyword}%,ai_description.ilike.%${keyword}%,ai_apps_used.cs.{${keyword}},ai_use_cases.cs.{${keyword}},ai_tags.cs.{${keyword}}`)
+        })
+      }
     }
 
     // Apply category filter
@@ -62,7 +74,7 @@ export async function getTemplates(filters: TemplateFilters = {}): Promise<{
       query = query.eq('use_case', filters.useCase)
     }
 
-    // Apply sorting
+    // Apply basic sorting (search prioritization will be done in JavaScript)
     switch (filters.sortBy) {
       case 'popular':
         query = query.order('popularity_score', { ascending: false })
@@ -94,7 +106,27 @@ export async function getTemplates(filters: TemplateFilters = {}): Promise<{
       return { templates: [], total: 0, error: error.message }
     }
 
-    const templates = data?.map(transformTemplateForDisplay) || []
+    let templates = data?.map(transformTemplateForDisplay) || []
+
+    // Apply search result prioritization if searching
+    if (searchKeywords.length > 0) {
+      templates = templates.sort((a, b) => {
+        // Check if template titles contain ALL search keywords
+        const aHasTitleMatch = searchKeywords.every(keyword => 
+          a.title.toLowerCase().includes(keyword)
+        )
+        const bHasTitleMatch = searchKeywords.every(keyword => 
+          b.title.toLowerCase().includes(keyword)
+        )
+
+        // Prioritize title matches
+        if (aHasTitleMatch && !bHasTitleMatch) return -1
+        if (!aHasTitleMatch && bHasTitleMatch) return 1
+
+        // If both have title matches or both don't, maintain original order
+        return 0
+      })
+    }
 
     return {
       templates,
