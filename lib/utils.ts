@@ -35,3 +35,28 @@ export function slugToName(slug: string): string {
     .join(' ')
     .replace(/\bAnd\b/g, '&')         // Convert "And" back to "&"
 }
+
+// Smart pluralization function that handles already plural words
+export function smartPluralize(word: string): string {
+  const lowerWord = word.toLowerCase()
+  
+  // Words that are already plural or don't need 's' added
+  const alreadyPlural = [
+    'operations',
+    'analytics',
+    'logistics',
+    'sales',
+    'communications',
+    'relations',
+    'resources',
+    'services',
+    'systems'
+  ]
+  
+  if (alreadyPlural.includes(lowerWord)) {
+    return word // Return as-is for already plural words
+  }
+  
+  // For regular words, add 's'
+  return word + 's'
+}

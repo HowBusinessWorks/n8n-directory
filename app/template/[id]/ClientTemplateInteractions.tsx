@@ -9,7 +9,7 @@ import { TemplateDisplay } from "@/lib/supabase"
 
 interface ClientTemplateInteractionsProps {
   template: TemplateDisplay
-  variant?: 'navbar' | 'header' | 'footer' | 'buttons'
+  variant?: 'navbar' | 'header' | 'footer' | 'buttons' | 'template-only'
 }
 
 export default function ClientTemplateInteractions({ template, variant = 'buttons' }: ClientTemplateInteractionsProps) {
@@ -125,6 +125,47 @@ export default function ClientTemplateInteractions({ template, variant = 'button
               <p className="text-xs text-gray-500">
                 By contributing, you agree to our community guidelines and terms of service.
               </p>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </>
+    )
+  }
+
+  // 'template-only' variant - only shows the See Template button
+  if (variant === 'template-only') {
+    return (
+      <>
+        {/* See Template Button Only */}
+        <Dialog open={isJsonModalOpen} onOpenChange={setIsJsonModalOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-[#E87C57] hover:bg-[#FF8D66] text-white font-medium">
+              <Eye className="h-4 w-4 mr-2" />
+              See Template
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl w-full max-h-[80vh] bg-[#1A1225] border border-[#2D1A3F]">
+            <DialogHeader>
+              <DialogTitle className="text-white text-xl font-bold mb-4 flex items-center justify-between">
+                <span>Template JSON</span>
+                <Button
+                  onClick={copyToClipboard}
+                  className={`${
+                    isCopied 
+                      ? 'bg-green-600 hover:bg-green-700' 
+                      : 'bg-[#E87C57] hover:bg-[#FF8D66]'
+                  } text-white transition-colors`}
+                  size="sm"
+                >
+                  {isCopied ? <Check className="h-4 w-4 mr-1" /> : <Copy className="h-4 w-4 mr-1" />}
+                  {isCopied ? 'Copied!' : 'Copy'}
+                </Button>
+              </DialogTitle>
+            </DialogHeader>
+            <div className="flex-1 overflow-hidden">
+              <pre className="text-gray-300 text-sm whitespace-pre-wrap overflow-auto max-h-96 p-4 bg-[#0F0B1A] rounded-lg border border-[#2D1A3F]">
+                {JSON.stringify(template.workflow_json, null, 2)}
+              </pre>
             </div>
           </DialogContent>
         </Dialog>

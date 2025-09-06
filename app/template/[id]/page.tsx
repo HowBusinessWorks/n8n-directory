@@ -73,27 +73,6 @@ export default async function TemplatePage({ params }: TemplatePageProps) {
     <div className="min-h-screen bg-[#0F0B1A]">
       {/* Header */}
       <header className="bg-gradient-to-r from-[#1A1225] to-[#2D1A3F] text-white">
-        {/* Navigation Bar */}
-        <nav className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-2">
-              <div className="bg-[#E87C57] p-1.5 rounded-md">
-                <Braces className="h-4 w-4 text-white" />
-              </div>
-              <h3 className="text-lg font-bold text-white">n8n json</h3>
-            </Link>
-            
-            {/* Right Side - Templates Link + Contribution Button */}
-            <div className="flex items-center gap-4">
-              <Link href="/" className="text-white hover:text-[#E87C57] transition-colors font-medium text-sm">
-                Templates
-              </Link>
-              <ClientTemplateInteractions template={template} variant="navbar" />
-            </div>
-          </div>
-        </nav>
-        
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center gap-4 mb-6">
             <Link href="/" className="inline-flex items-center gap-2 text-white hover:bg-[#2D1A3F] hover:text-white px-3 py-2 rounded-md transition-colors text-sm">
@@ -120,7 +99,7 @@ export default async function TemplatePage({ params }: TemplatePageProps) {
 
             <p className="text-lg text-gray-300 mb-6 leading-relaxed">{template.description}</p>
 
-            <ClientTemplateInteractions template={template} variant="buttons" />
+            <ClientTemplateInteractions template={template} variant="template-only" />
           </div>
         </div>
       </header>

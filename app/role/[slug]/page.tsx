@@ -50,17 +50,17 @@ export async function generateMetadata({ params }: RolePageProps) {
     
     return {
       title: `${roleName} Templates | n8n json`,
-      description: `Discover ${templateCount} n8n automation templates designed for ${roleName.toLowerCase()}s. Browse workflows tailored to ${roleName.toLowerCase()} needs and responsibilities.`,
+      description: `Discover ${templateCount} n8n automation templates designed for ${roleName.toLowerCase()} professionals. Browse workflows tailored to ${roleName.toLowerCase()} needs and responsibilities.`,
       openGraph: {
         title: `${roleName} Templates | n8n json`,
-        description: `Discover ${templateCount} n8n automation templates designed for ${roleName.toLowerCase()}s.`,
+        description: `Discover ${templateCount} n8n automation templates designed for ${roleName.toLowerCase()} professionals.`,
         url: `https://n8njson.com/role/${resolvedParams.slug}`,
         type: 'website',
       },
       twitter: {
         card: 'summary_large_image',
         title: `${roleName} Templates | n8n json`,
-        description: `Discover ${templateCount} n8n automation templates designed for ${roleName.toLowerCase()}s.`,
+        description: `Discover ${templateCount} n8n automation templates designed for ${roleName.toLowerCase()} professionals.`,
       },
       alternates: {
         canonical: `https://n8njson.com/role/${resolvedParams.slug}`,
@@ -70,7 +70,7 @@ export async function generateMetadata({ params }: RolePageProps) {
     console.error('Error generating metadata for role:', error)
     return {
       title: `${roleName} Templates | n8n json`,
-      description: `Browse n8n automation templates for ${roleName.toLowerCase()}s.`,
+      description: `Browse n8n automation templates for ${roleName.toLowerCase()} professionals.`,
     }
   }
 }
@@ -143,7 +143,7 @@ export default async function RolePage({ params, searchParams }: RolePageProps) 
             
             {total > 0 && (
               <p className="text-xl sm:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-                Discover <span className="text-[#E87C57] font-semibold">{total}</span> automation templates designed for <span className="text-white font-medium">{roleName.toLowerCase()}s</span> and their workflows
+                Discover <span className="text-[#E87C57] font-semibold">{total}</span> automation templates designed for <span className="text-white font-medium">{roleName.toLowerCase()} professionals</span> and their workflows
               </p>
             )}
             
