@@ -83,6 +83,27 @@ export function transformTemplateForDisplay(template: Template): TemplateDisplay
   }
 }
 
+// Lightweight transform function for partial Template data (for pagination queries)
+export function transformPartialTemplateForDisplay(template: any): TemplateDisplay {
+  return {
+    id: template.id,
+    title: template.ai_title || template.title,
+    description: template.ai_description || template.description,
+    nodes: template.node_count,
+    complexity: mapComplexityLevel(template.complexity_level),
+    industries: template.ai_industries || [],
+    integrations: (template.ai_apps_used || []).map((app: string) => ({ name: app })),
+    useCases: template.ai_use_cases || [],
+    howWorks: template.ai_how_works?.join('\n\n') || undefined,
+    setupSteps: template.ai_setup_steps || [],
+    categories: template.ai_categories ? [template.ai_categories] : [],
+    roles: template.ai_roles || [],
+    tags: template.ai_tags || [],
+    workflow_json: template.workflow_json || undefined,
+    source: template.source || undefined,
+  }
+}
+
 // Map database complexity levels to frontend display
 function mapComplexityLevel(level: string): 'Beginner' | 'Intermediate' | 'Advanced' {
   switch (level?.toLowerCase()) {

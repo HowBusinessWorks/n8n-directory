@@ -1,4 +1,4 @@
-import { supabase, Template, TemplateDisplay, transformTemplateForDisplay } from './supabase'
+import { supabase, TemplateDisplay, transformTemplateForDisplay, transformPartialTemplateForDisplay } from './supabase'
 import { createSlug } from './utils'
 
 // Filter and search options
@@ -23,7 +23,7 @@ export async function getTemplates(filters: TemplateFilters = {}): Promise<{
   try {
     let query = supabase
       .from('templates')
-      .select('*', { count: 'exact' })
+      .select('id, title, ai_title, description, ai_description, node_count, created_at, updated_at, ai_categories, ai_industries, ai_roles, ai_use_cases, ai_how_works, ai_setup_steps, ai_apps_used, ai_tags, complexity_level, use_case, status, popularity_score, source', { count: 'exact' })
       .or('status.eq.published,status.is.null') // Only show published templates (null for legacy data)
 
     // Apply search filter with multi-keyword support and prioritization
@@ -93,11 +93,10 @@ export async function getTemplates(filters: TemplateFilters = {}): Promise<{
     }
 
     // Apply pagination
-    if (filters.limit) {
+    if (filters.limit && filters.offset !== undefined) {
+      query = query.range(filters.offset, filters.offset + filters.limit - 1)
+    } else if (filters.limit) {
       query = query.limit(filters.limit)
-    }
-    if (filters.offset) {
-      query = query.range(filters.offset, filters.offset + (filters.limit || 50) - 1)
     }
 
     const { data, error, count } = await query
@@ -107,7 +106,7 @@ export async function getTemplates(filters: TemplateFilters = {}): Promise<{
       return { templates: [], total: 0, error: error.message }
     }
 
-    let templates = data?.map(transformTemplateForDisplay) || []
+    let templates = data?.map(transformPartialTemplateForDisplay) || []
 
     // Apply search result prioritization if searching
     if (searchKeywords.length > 0) {
@@ -192,7 +191,7 @@ export function generateTemplateSlug(template: TemplateDisplay): string {
   return createSlug(template.title)
 }
 
-// Get template by SEO-friendly slug
+// Get template by SEO-friendly slug  
 export async function getTemplateBySlug(slug: string): Promise<{
   template: TemplateDisplay | null
   error: string | null
@@ -200,26 +199,54 @@ export async function getTemplateBySlug(slug: string): Promise<{
   try {
     console.log('Looking for template with slug:', slug)
     
-    // Get all published templates and find by exact slug match
-    // This is more reliable than trying to reverse-engineer titles from slugs
-    const { data, error } = await supabase
+    // Convert slug back to potential title patterns for more efficient search
+    const titlePattern = slug
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ')
+      .replace(/\\bAnd\\b/g, '&')
+    
+    console.log('Searching for title pattern:', titlePattern)
+    
+    // First try exact title match or ai_title match
+    let { data, error } = await supabase
       .from('templates')
       .select('*')
       .or('status.eq.published,status.is.null')
-
+      .or(`title.ilike.${titlePattern},ai_title.ilike.${titlePattern}`)
+      .limit(20) // Limit to first 20 potential matches
+    
     if (error) {
       console.error('Error fetching templates for slug lookup:', error)
       return { template: null, error: error.message }
     }
-
+    
+    // If no exact matches, try fuzzy search with individual words
     if (!data || data.length === 0) {
-      console.log('No templates found')
-      return { template: null, error: 'No templates found' }
+      console.log('No exact title matches, trying fuzzy search...')
+      const searchTerms = slug.split('-').filter(term => term.length > 2) // Skip short words
+      if (searchTerms.length > 0) {
+        const searchPattern = searchTerms.join('|')
+        const result = await supabase
+          .from('templates')
+          .select('*')
+          .or('status.eq.published,status.is.null')
+          .or(`title.ilike.%${searchPattern}%,ai_title.ilike.%${searchPattern}%`)
+          .limit(50)
+          
+        data = result.data
+        error = result.error
+      }
     }
 
-    console.log(`Checking ${data.length} templates for slug match...`)
+    if (error || !data || data.length === 0) {
+      console.log('No templates found matching slug')
+      return { template: null, error: 'Template not found' }
+    }
 
-    // Check each template for exact slug match
+    console.log(`Checking ${data.length} potential matches for exact slug match...`)
+
+    // Check each potential match for exact slug match
     for (const templateData of data) {
       const template = transformTemplateForDisplay(templateData)
       const templateSlug = generateTemplateSlug(template)
@@ -273,7 +300,7 @@ export async function getFilterOptions(): Promise<{
   error: string | null
 }> {
   try {
-    // Get all templates to extract unique filter values
+    // Get only the fields needed for filter options (much faster)
     const { data, error } = await supabase
       .from('templates')
       .select('ai_categories, ai_industries, ai_roles, use_case, complexity_level')

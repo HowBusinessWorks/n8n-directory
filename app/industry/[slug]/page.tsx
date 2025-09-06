@@ -266,7 +266,7 @@ export default async function IndustryPage({ params, searchParams }: IndustryPag
           {total > ITEMS_PER_PAGE && (
             <div className="text-center mt-12 mb-4">
               <p className="text-sm text-gray-400">
-                Showing page {currentPage} of {totalPages} ({templates.length} templates)
+                Showing page {currentPage} of {totalPages} ({total} templates)
               </p>
             </div>
           )}
