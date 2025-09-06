@@ -419,9 +419,10 @@ export default function TemplateDirectory() {
 
           {/* Template Grid */}
           {!loading && !error && (
-            <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-              style={{ contain: 'layout style paint' }}
-            >
+            <div className="min-h-[150px]">
+              <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                style={{ contain: 'layout style paint' }}
+              >
               {currentTemplates.map((template) => (
                 <Link key={template.id} href={`/template/${template.id}`} className="block">
                   <Card
@@ -514,6 +515,7 @@ export default function TemplateDirectory() {
                 </Card>
                 </Link>
               ))}
+              </div>
             </div>
           )}
 
@@ -604,7 +606,8 @@ export default function TemplateDirectory() {
 
           {/* No Results */}
           {!loading && !error && templates.length === 0 && (
-            <div className="text-center py-16">
+            <div className="min-h-[450px] flex items-start justify-center pt-4">
+              <div className="text-center">
               <p className="text-gray-400 text-lg">No templates found matching your criteria.</p>
               <Button 
                 onClick={() => {
@@ -619,6 +622,7 @@ export default function TemplateDirectory() {
               >
                 Clear Filters
               </Button>
+              </div>
             </div>
           )}
         </div>
