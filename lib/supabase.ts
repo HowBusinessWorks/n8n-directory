@@ -37,6 +37,13 @@ export interface Template {
   created_at: string | null
   updated_at: string | null
   extracted_at: string | null
+  // New fields from reprocessing
+  slug: string | null
+  structure_hash: string | null
+  connection_pattern: string | null
+  processed_at: string | null
+  is_duplicate: boolean | null
+  duplicate_of: string | null
 }
 
 // Frontend-friendly template type (simplified for UI)
@@ -44,6 +51,7 @@ export interface TemplateDisplay {
   id: string
   title: string
   description: string
+  slug: string
   nodes: number
   complexity: 'Beginner' | 'Intermediate' | 'Advanced'
   industries: string[]
@@ -64,14 +72,18 @@ export interface TemplateDisplay {
 
 // Helper function to transform database template to display format
 export function transformTemplateForDisplay(template: Template): TemplateDisplay {
+  // Create slug from database slug or fallback to title
+  const slug = template.slug || createSlugFallback(template.ai_title || template.title)
+  
   return {
     id: template.id,
     title: template.ai_title || template.title,
-    description: template.ai_description || template.description,
+    description: template.description, // Enhanced description is now in the main description field
+    slug: slug,
     nodes: template.node_count,
     complexity: mapComplexityLevel(template.complexity_level),
     industries: template.ai_industries || [],
-    integrations: template.ai_apps_used.map(app => ({ name: app })),
+    integrations: (template.ai_apps_used || []).map(app => ({ name: app })),
     useCases: template.ai_use_cases,
     howWorks: template.ai_how_works?.join('\n\n') || undefined,
     setupSteps: template.ai_setup_steps,
@@ -85,10 +97,14 @@ export function transformTemplateForDisplay(template: Template): TemplateDisplay
 
 // Lightweight transform function for partial Template data (for pagination queries)
 export function transformPartialTemplateForDisplay(template: any): TemplateDisplay {
+  // Create slug from database slug or fallback to title
+  const slug = template.slug || createSlugFallback(template.ai_title || template.title)
+  
   return {
     id: template.id,
     title: template.ai_title || template.title,
-    description: template.ai_description || template.description,
+    description: template.description, // Enhanced description is now in the main description field
+    slug: slug,
     nodes: template.node_count,
     complexity: mapComplexityLevel(template.complexity_level),
     industries: template.ai_industries || [],
@@ -102,6 +118,17 @@ export function transformPartialTemplateForDisplay(template: any): TemplateDispl
     workflow_json: template.workflow_json || undefined,
     source: template.source || undefined,
   }
+}
+
+// Fallback slug creation for templates without slugs
+function createSlugFallback(title: string): string {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+    .substring(0, 80)
+    .replace(/-$/, '')
 }
 
 // Map database complexity levels to frontend display

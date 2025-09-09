@@ -424,7 +424,7 @@ export default function TemplateDirectory() {
                 style={{ contain: 'layout style paint' }}
               >
               {currentTemplates.map((template) => (
-                <Link key={template.id} href={`/template/${template.id}`} className="block">
+                <Link key={template.id} href={`/template/${template.slug}`} className="block">
                   <Card
                     className="backdrop-blur-sm transition-all duration-300 border hover:border-[#E87C57]/60 hover:shadow-xl hover:shadow-[#E87C57]/20 flex flex-col group cursor-pointer h-full"
                     style={{

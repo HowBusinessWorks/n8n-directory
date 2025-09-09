@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: TemplatePageProps) {
     openGraph: {
       title: `${template.title} | n8n Template`,
       description: template.description,
-      url: `https://n8njson.com/template/${createSlug(template.title)}`,
+      url: `https://n8njson.com/template/${template.slug}`,
       type: 'website',
     },
     twitter: {
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: TemplatePageProps) {
       description: template.description,
     },
     alternates: {
-      canonical: `https://n8njson.com/template/${createSlug(template.title)}`,
+      canonical: `https://n8njson.com/template/${template.slug}`,
     },
   }
 }
