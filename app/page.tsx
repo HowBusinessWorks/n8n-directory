@@ -153,11 +153,34 @@ export default function TemplateDirectory() {
 
       const data = await response.json()
 
+      // Clean response handling (debug logs removed)
+
       if (response.ok) {
+        // Client-side duplicate detection as backup
+        if (data && data.subscription && data.subscription.data) {
+          const subscriptionData = data.subscription.data
+          const createdTimestamp = subscriptionData.created
+          const currentTimestamp = Math.floor(Date.now() / 1000)
+          const timeDifference = currentTimestamp - createdTimestamp
+          
+          // Check if this is a duplicate subscription (created more than 1 minute ago)
+          
+          if (timeDifference > 60) {
+            setNewsletterMessage({ type: 'error', text: 'This email is already subscribed to our newsletter! Check your inbox for previous emails.' })
+            return // Don't clear the email field for duplicates
+          }
+        }
+        
         setNewsletterMessage({ type: 'success', text: data.message })
         setEmail('') // Clear the email input
       } else {
-        setNewsletterMessage({ type: 'error', text: data.error || 'Failed to subscribe' })
+        // Handle duplicate subscription as a special case
+        if (response.status === 409) {
+          setNewsletterMessage({ type: 'error', text: data.error || 'This email is already subscribed!' })
+          // Don't clear the email for duplicates - user might want to see which email they tried
+        } else {
+          setNewsletterMessage({ type: 'error', text: data.error || 'Failed to subscribe' })
+        }
       }
     } catch (error) {
       console.error('Newsletter subscription error:', error)
