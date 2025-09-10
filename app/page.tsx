@@ -225,7 +225,7 @@ export default function TemplateDirectory() {
 
             {/* Subheading */}
             <p className="text-xl md:text-2xl mb-10 text-gray-300">
-            If you dont find it here, you wont find it angwhere else
+            If you dont find it here, you wont find it anywhere else
             </p>
 
             {/* Email Form */}
