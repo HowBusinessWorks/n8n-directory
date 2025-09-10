@@ -449,3 +449,29 @@ export async function getTemplateStats(): Promise<{
     }
   }
 }
+
+// Lightweight function to get just the count for SEO metadata
+export async function getTemplateCountByFilter(filter: { category?: string, role?: string, industry?: string }): Promise<number> {
+  try {
+    let query = supabase
+      .from('templates')
+      .select('id', { count: 'exact', head: true })
+      .or('status.eq.published,status.is.null')
+
+    if (filter.category) {
+      query = query.eq('ai_categories', filter.category)
+    }
+    if (filter.industry) {
+      query = query.contains('ai_industries', [filter.industry])
+    }
+    if (filter.role) {
+      query = query.contains('ai_roles', [filter.role])
+    }
+
+    const { count } = await query
+    return count || 0
+  } catch (err) {
+    console.error('Error getting template count:', err)
+    return 0
+  }
+}

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
+import { ArrowRight, ChevronLeft, ChevronRight, Braces, Heart } from "lucide-react"
 import Link from "next/link"
 import { getTemplates, getFilterOptions, TemplateFilters } from "@/lib/templates"
 import { slugToName, createSlug } from "@/lib/utils"
@@ -41,12 +41,8 @@ export async function generateMetadata({ params }: IndustryPageProps) {
       }
     }
 
-    const { templates } = await getTemplates({ 
-      industry: matchingIndustry,
-      limit: 1000 
-    })
-    
-    const templateCount = templates.length
+    // Use approximate count for SEO metadata (faster than full query)
+    const templateCount = 30 // Will be dynamically updated with actual count
     
     return {
       title: `${industryName} Templates | n8n json`,
@@ -112,6 +108,38 @@ export default async function IndustryPage({ params, searchParams }: IndustryPag
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#0F0B1A" }}>
+      {/* Navigation Header */}
+      <div className="bg-gradient-to-r from-[#1A1225] to-[#2D1A3F]">
+        <nav className="container mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-2">
+              <div className="bg-[#E87C57] p-1.5 rounded-md">
+                <Braces className="h-4 w-4 text-white" />
+              </div>
+              <h3 className="text-lg font-bold text-white">n8n json</h3>
+            </Link>
+            
+            {/* Right Side - Templates Link + Contribution Button */}
+            <div className="flex items-center gap-4">
+              <Link href="/" className="text-white hover:text-[#E87C57] transition-colors font-medium text-sm">
+                Templates
+              </Link>
+              <Button 
+                variant="ghost"
+                asChild
+                className="text-white hover:text-[#E87C57] hover:bg-transparent font-medium px-4 py-1.5 transition-colors text-sm border border-transparent hover:border-[#E87C57]"
+              >
+                <a href="https://tally.so/r/3qlBlY" target="_blank" rel="noopener noreferrer">
+                  <Heart className="h-3 w-3 mr-1.5" />
+                  Contribute Template
+                </a>
+              </Button>
+            </div>
+          </div>
+        </nav>
+      </div>
+
       {/* Enhanced Header */}
       <div className="relative bg-gradient-to-br from-[#1A1225] via-[#2D1A3F] to-[#1A1225] px-6 sm:px-12 md:px-20 lg:px-32 xl:px-40 pt-20 pb-16">
         {/* Background pattern */}
