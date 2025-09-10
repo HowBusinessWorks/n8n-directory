@@ -12,6 +12,9 @@ export const metadata: Metadata = {
     apple: '/favicon.svg',
   },
   viewport: 'width=device-width, initial-scale=1',
+  verification: {
+    google: 'CL4rqDcNqHtg5QR-LjyPT_IbK2Fgwjdbfzbi3d6FsAI',
+  },
   openGraph: {
     title: 'n8n json - Free n8n Template Directory',
     description: 'The #1 FREE n8n Template Directory. Discover thousands of automation templates for n8n workflows.',
