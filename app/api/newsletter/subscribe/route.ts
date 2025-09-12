@@ -121,15 +121,22 @@ export async function POST(request: Request) {
       const createdTimestamp = subscriptionData.created
       const currentTimestamp = Math.floor(Date.now() / 1000)
       const timeDifference = currentTimestamp - createdTimestamp
+      const subscriptionStatus = subscriptionData.status
       
-      // Duplicate detection: if subscription was created more than 1 minute ago, it's a duplicate
-      
-      // If the subscription was created more than 1 minute ago, it's likely a duplicate
-      // (new subscriptions should have a timestamp very close to now)
-      if (timeDifference > 60) { // 60 seconds threshold
+      // Only treat as duplicate if subscription is valid/active and was created more than 1 minute ago
+      // Allow invalid subscriptions to be resubmitted
+      if (timeDifference > 60 && subscriptionStatus !== 'invalid') { // 60 seconds threshold
         return NextResponse.json(
           { error: 'This email is already subscribed to our newsletter! Check your inbox for previous emails.' },
           { status: 409, headers: corsHeaders }
+        )
+      }
+      
+      // Handle invalid subscriptions specially
+      if (subscriptionStatus === 'invalid') {
+        return NextResponse.json(
+          { error: 'This email address appears to be invalid or unreachable. Please check the email address and try again.' },
+          { status: 400, headers: corsHeaders }
         )
       }
     }

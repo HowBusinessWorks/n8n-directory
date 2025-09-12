@@ -162,12 +162,18 @@ export default function TemplateDirectory() {
           const createdTimestamp = subscriptionData.created
           const currentTimestamp = Math.floor(Date.now() / 1000)
           const timeDifference = currentTimestamp - createdTimestamp
+          const subscriptionStatus = subscriptionData.status
           
-          // Check if this is a duplicate subscription (created more than 1 minute ago)
-          
-          if (timeDifference > 60) {
+          // Only treat as duplicate if subscription is valid/active and was created more than 1 minute ago
+          if (timeDifference > 60 && subscriptionStatus !== 'invalid') {
             setNewsletterMessage({ type: 'error', text: 'This email is already subscribed to our newsletter! Check your inbox for previous emails.' })
             return // Don't clear the email field for duplicates
+          }
+          
+          // Handle invalid subscriptions
+          if (subscriptionStatus === 'invalid') {
+            setNewsletterMessage({ type: 'error', text: 'This email address appears to be invalid or unreachable. Please check the email address and try again.' })
+            return // Don't clear the email field for invalid emails
           }
         }
         
