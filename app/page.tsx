@@ -15,6 +15,7 @@ export default function TemplateDirectory() {
   const [error, setError] = useState<string | null>(null)
   const [totalCount, setTotalCount] = useState(0)
   const [totalTemplatesCount, setTotalTemplatesCount] = useState(0)
+  const [hydrated, setHydrated] = useState(false)
   
   // Newsletter states
   const [email, setEmail] = useState("")
@@ -45,8 +46,14 @@ export default function TemplateDirectory() {
   
   // Other states (removed contribution modal)
 
+  // Hydration effect to prevent SSR mismatch
+  useEffect(() => {
+    setHydrated(true)
+  }, [])
+
   // Load filter options and total template count on component mount
   useEffect(() => {
+    if (!hydrated) return
     const loadInitialData = async () => {
       const [filterOptions, templateStats] = await Promise.all([
         getFilterOptions(),
@@ -63,10 +70,17 @@ export default function TemplateDirectory() {
       setTotalTemplatesCount(templateStats.total)
     }
     loadInitialData()
-  }, [])
+  }, [hydrated])
+
+  // Separate effect to reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [debouncedSearchTerm, selectedCategory, selectedRole, selectedIndustry, selectedComplexity])
 
   // Load templates based on current filters
   useEffect(() => {
+    if (!hydrated) return
+    
     const loadTemplates = async () => {
       setLoading(true)
       setError(null)
@@ -78,7 +92,8 @@ export default function TemplateDirectory() {
         industry: selectedIndustry !== "All" ? selectedIndustry : undefined,
         complexity: selectedComplexity !== "All" ? selectedComplexity : undefined,
         sortBy,
-        limit: 1000 // Get more templates for pagination
+        limit: ITEMS_PER_PAGE, // Only load what we need for current page
+        offset: (currentPage - 1) * ITEMS_PER_PAGE
       }
 
       const { templates: fetchedTemplates, total, error: fetchError } = await getTemplates(filters)
@@ -88,14 +103,13 @@ export default function TemplateDirectory() {
       } else {
         setTemplates(fetchedTemplates)
         setTotalCount(total)
-        setCurrentPage(1) // Reset to first page when filters change
       }
       
       setLoading(false)
     }
 
     loadTemplates()
-  }, [debouncedSearchTerm, selectedCategory, selectedRole, selectedIndustry, selectedComplexity, sortBy])
+  }, [hydrated, debouncedSearchTerm, selectedCategory, selectedRole, selectedIndustry, selectedComplexity, sortBy, currentPage])
 
   // Handle search with debouncing
   const handleSearch = (value: string) => {
@@ -111,15 +125,16 @@ export default function TemplateDirectory() {
     return () => clearTimeout(timer)
   }, [searchTerm])
 
-  // Calculate pagination with memoization
+  // Calculate pagination with memoization - use server-side pagination
   const { totalPages, currentTemplates, startIndex, endIndex } = useMemo(() => {
-    const totalPages = Math.ceil(templates.length / ITEMS_PER_PAGE)
+    const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE)
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
     const endIndex = startIndex + ITEMS_PER_PAGE
-    const currentTemplates = templates.slice(startIndex, endIndex)
+    // Templates are already paginated from server, so use them directly
+    const currentTemplates = templates
     
     return { totalPages, currentTemplates, startIndex, endIndex }
-  }, [templates, currentPage, ITEMS_PER_PAGE])
+  }, [templates, currentPage, ITEMS_PER_PAGE, totalCount])
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
@@ -199,6 +214,17 @@ export default function TemplateDirectory() {
     setTimeout(() => {
       setNewsletterMessage(null)
     }, 5000)
+  }
+
+  // Prevent hydration mismatch by showing loading until hydrated
+  if (!hydrated) {
+    return (
+      <div className="min-h-screen" style={{ backgroundColor: "#0F0B1A" }}>
+        <div className="flex items-center justify-center min-h-screen">
+          <Loader2 className="h-8 w-8 animate-spin text-[#E87C57]" />
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -627,8 +653,7 @@ export default function TemplateDirectory() {
           {!loading && !error && templates.length > 0 && (
             <div className="flex justify-center mt-6">
               <p className="text-gray-400 text-sm">
-                Showing {startIndex + 1}-{Math.min(endIndex, templates.length)} of {templates.length} templates
-                {totalCount > templates.length && ` (${totalCount.toLocaleString()} total available)`}
+                Showing {startIndex + 1}-{Math.min(endIndex, startIndex + templates.length)} of {totalCount.toLocaleString()} templates
               </p>
             </div>
           )}

@@ -39,3 +39,8 @@ RAW_TEMPLATES.json
 
 # Claude Code files
 CLAUDE.md
+# Test reports and artifacts
+lighthouse-reports/
+playwright-report/
+test-results/
+
