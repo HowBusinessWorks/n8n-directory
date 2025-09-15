@@ -3,7 +3,7 @@ import { getFilterOptions } from '@/lib/templates'
 import { createSlug } from '@/lib/utils'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://n8njson.io'
+  const baseUrl = 'https://www.n8njson.io'
   
   try {
     // Get all filter options to generate dynamic pages
